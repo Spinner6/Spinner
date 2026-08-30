@@ -1,0 +1,2245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPINNER — Cosmetic Demo</title>
+
+<style>
+:root{
+  --bg:#0d0e10;
+  --panel:#17191d;
+  --line:#2a2d33;
+  --yellow:#00ff15;
+  --text:#f3f3f3;
+  --muted:#8d9199;
+  --green:#46c95a;
+  --red:#7c2929;
+  --chance:50;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at 50% 35%,#1b1d20 0,#101113 35%,#0b0c0e 72%);
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+button,input{
+  font:inherit;
+}
+
+.topbar{
+  height:68px;
+  background:#17181b;
+  border-bottom:1px solid #25272b;
+  display:flex;
+  align-items:center;
+  padding:0 24px;
+  gap:14px;
+}
+
+.logo{
+  font-weight:900;
+  font-size:25px;
+  letter-spacing:-1px;
+}
+
+.logoMark{
+  color:var(--yellow);
+}
+
+.spacer{
+  flex:1;
+}
+
+.balance{
+  height:40px;
+  display:flex;
+  align-items:center;
+  padding:0 14px;
+  background:#111316;
+  border:1px solid #292c31;
+  border-radius:6px;
+  font-size:12px;
+  color:#aaa;
+}
+
+.balance b{
+  color:#ffd900;
+  margin-left:7px;
+}
+
+.addBalance{
+  height:40px;
+  border:0;
+  border-radius:6px;
+  background:var(--yellow);
+  color:#101010;
+  padding:0 17px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.avatar{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#777,#111);
+  border:2px solid #444;
+}
+
+.layout{
+  min-height:calc(100vh - 68px);
+}
+
+.main{
+  padding:38px 45px 45px;
+  max-width:1450px;
+  width:100%;
+  margin:auto;
+}
+
+.brand{
+  text-align:center;
+  font-size:23px;
+  font-weight:900;
+  margin:4px 0 42px;
+}
+
+.brand span{
+  color:var(--yellow);
+}
+
+.upgradeGrid{
+  display:grid;
+  grid-template-columns:1fr 340px 1fr;
+  gap:42px;
+  align-items:center;
+}
+
+.pick{
+  height:330px;
+  background:linear-gradient(145deg,#191b1f,#15171a);
+  border-radius:10px;
+  border:1px solid #202329;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  box-shadow:0 18px 40px rgba(0,0,0,.25);
+}
+
+.pick h3{
+  position:absolute;
+  top:22px;
+  margin:0;
+  font-size:16px;
+}
+
+.pick small{
+  position:absolute;
+  top:47px;
+  color:#777;
+  font-size:11px;
+}
+
+.placeholder{
+  text-align:center;
+  color:#5d6169;
+  font-size:90px;
+  font-weight:900;
+  opacity:.28;
+}
+
+.itemPreview{
+  display:none;
+  text-align:center;
+}
+
+.itemPreview .weapon{
+  font-size:80px;
+  filter:drop-shadow(0 0 20px rgba(255,212,0,.3));
+}
+
+.itemPreview b{
+  display:block;
+  margin-top:12px;
+  font-size:16px;
+}
+
+.itemPreview .previewPrice{
+  margin-top:7px;
+  color:#ffd900;
+  font-size:13px;
+}
+
+/* WHEEL */
+
+.wheelWrap{
+  text-align:center;
+}
+
+.wheel{
+  width:300px;
+  height:300px;
+  margin:auto;
+  border-radius:50%;
+
+  background:
+    conic-gradient(
+      from 0deg,
+      var(--green) 0deg,
+      var(--green) calc(var(--chance) * 3.6deg),
+      var(--red) calc(var(--chance) * 3.6deg),
+      var(--red) 360deg
+    );
+
+  border:14px solid #292b2f;
+
+  box-shadow:
+    0 0 0 2px #101113,
+    0 0 45px rgba(0,0,0,.5);
+
+  position:relative;
+}
+
+.wheel:after{
+  content:"";
+  position:absolute;
+  inset:51px;
+  border-radius:50%;
+  background:#111316;
+  border:1px solid #303239;
+  box-shadow:inset 0 0 30px #000;
+}
+
+.pointerOrbit{
+  position:absolute;
+  inset:33px;
+  z-index:5;
+  pointer-events:none;
+  transform:rotate(0deg);
+}
+
+.pointer{
+  position:absolute;
+  top:0;
+  left:50%;
+
+  transform:
+    translateX(-50%)
+    rotate(180deg);
+
+  width:0;
+  height:0;
+
+  border-left:9px solid transparent;
+  border-right:9px solid transparent;
+  border-bottom:25px solid #ff9d00;
+
+  filter:drop-shadow(0 0 7px #ff7b00);
+}
+
+.center{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  z-index:2;
+  font-size:12px;
+  color:#777;
+}
+
+.center strong{
+  font-size:31px;
+  color:#a5d34b;
+}
+
+.chanceLabel{
+  text-align:center;
+  color:#74777d;
+  font-size:12px;
+  margin-top:12px;
+}
+
+.chanceLabel b{
+  color:#a7d94b;
+}
+
+.controls{
+  margin-top:24px;
+}
+
+.speedButton{
+  width:100%;
+  height:42px;
+  border:1px solid #30343a;
+  border-radius:6px;
+  background:#181a1e;
+  color:#aaa;
+  font-weight:900;
+  cursor:pointer;
+  margin-bottom:10px;
+}
+
+.speedButton.fast{
+  color:#111;
+  background:var(--yellow);
+  border-color:var(--yellow);
+}
+
+.spinBtn{
+  width:100%;
+  height:50px;
+  border:0;
+  border-radius:7px;
+  background:var(--yellow);
+  color:#171717;
+  font-weight:900;
+  cursor:pointer;
+  font-size:15px;
+  box-shadow:0 6px 0 #188d20;
+}
+
+.spinBtn:active{
+  transform:translateY(2px);
+  box-shadow:0 4px 0 #188d20;
+}
+
+.spinBtn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+/* RATIO */
+
+.ratioBox{
+  margin-top:13px;
+  padding:9px 12px;
+  background:#111316;
+  border:1px solid #292c31;
+  border-radius:6px;
+  font-size:10px;
+  color:#777;
+  min-height:34px;
+}
+
+.ratioBox b{
+  color:#d5d7da;
+}
+
+.ratioBox .ratio{
+  color:#ffd900;
+}
+
+.ratioBox .unavailable{
+  color:#ff5b5b;
+}
+
+/* INVENTORY */
+
+.inventoryGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+  margin-top:28px;
+}
+
+.panel{
+  background:#17191d;
+  border:1px solid #26292e;
+  border-radius:8px;
+  overflow:hidden;
+}
+
+.panelHead{
+  height:52px;
+  border-bottom:1px solid #272a2f;
+  display:flex;
+  align-items:center;
+  padding:0 15px;
+  gap:9px;
+}
+
+.panelHead b{
+  font-size:14px;
+}
+
+.panelHead span{
+  font-size:11px;
+  color:#777;
+}
+
+.shopBtn{
+  margin-left:auto;
+  border:0;
+  background:var(--yellow);
+  color:#101010;
+  height:32px;
+  padding:0 17px;
+  border-radius:5px;
+  font-weight:900;
+  font-size:11px;
+  cursor:pointer;
+}
+
+.search{
+  margin-left:auto;
+  background:#101215;
+  border:1px solid #2a2d31;
+  color:#aaa;
+  padding:8px 10px;
+  border-radius:4px;
+  width:130px;
+  font-size:11px;
+}
+
+.grid{
+  padding:13px;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:9px;
+}
+
+.card{
+  min-height:115px;
+  background:#1b1e22;
+  border:1px solid #31343a;
+  border-radius:5px;
+  padding:7px;
+  cursor:pointer;
+  transition:.15s;
+  position:relative;
+}
+
+.card:hover{
+  border-color:#bda600;
+  transform:translateY(-2px);
+}
+
+.card.selected{
+  border-color:var(--yellow);
+  box-shadow:0 0 0 1px #725f00 inset;
+}
+
+.card .skinArt{
+  height:59px;
+  border-radius:4px;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--c1,#a23),
+      var(--c2,#444)
+    );
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:29px;
+}
+
+.card .price{
+  font-size:9px;
+  color:#ffd900;
+  font-weight:800;
+  margin-top:6px;
+}
+
+.card .name{
+  font-size:9px;
+  color:#c7c9ce;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  margin-top:3px;
+}
+
+.notice{
+  margin-top:18px;
+  padding:11px 14px;
+  background:#15171a;
+  border:1px solid #272a2e;
+  border-radius:6px;
+  color:#6e727a;
+  font-size:10px;
+  text-align:center;
+}
+
+/* MODALS */
+
+.result,
+.shopModal,
+.balanceModal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:30;
+}
+
+.resultBox,
+.shopBox,
+.balanceBox{
+  width:min(440px,90%);
+  background:#17191d;
+  border:1px solid #49400a;
+  border-radius:10px;
+  padding:30px;
+  text-align:center;
+  box-shadow:0 20px 70px #000;
+}
+
+.resultBox h2{
+  margin:0 0 10px;
+  color:#ffd400;
+  font-size:23px;
+}
+
+.resultBox p{
+  color:#a5a8ae;
+  font-size:13px;
+}
+
+.modalButtons{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  margin-top:18px;
+}
+
+.modalButtons button{
+  border:0;
+  background:#ffd400;
+  padding:10px 24px;
+  border-radius:6px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.shopBox{
+  max-width:700px;
+}
+
+.shopBox h2,
+.balanceBox h2{
+  margin-top:0;
+}
+
+.shopGrid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-top:18px;
+}
+
+.shopCard{
+  background:#1b1e22;
+  border:1px solid #30343a;
+  border-radius:6px;
+  padding:9px;
+}
+
+.shopArt{
+  height:70px;
+  border-radius:5px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:32px;
+  background:linear-gradient(135deg,var(--c1),var(--c2));
+}
+
+.shopCard .shopName{
+  font-size:10px;
+  margin-top:7px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.shopCard .shopPrice{
+  color:#ffd900;
+  font-size:10px;
+  margin:5px 0;
+}
+
+.buyBtn{
+  width:100%;
+  height:28px;
+  border:0;
+  border-radius:4px;
+  background:var(--yellow);
+  font-size:9px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.balanceInput{
+  width:160px;
+  height:40px;
+  background:#101215;
+  border:1px solid #30343a;
+  border-radius:5px;
+  color:#fff;
+  text-align:center;
+  outline:none;
+}
+
+.closeBtn{
+  margin-top:18px;
+  border:1px solid #333;
+  background:#22252a;
+  color:#aaa;
+  padding:9px 22px;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+/* CHAT */
+
+.chat{
+  position:fixed;
+  right:22px;
+  bottom:22px;
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  background:var(--yellow);
+  color:#161616;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:21px;
+  font-weight:900;
+  box-shadow:0 5px 18px rgba(0,0,0,.4);
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1050px){
+
+  .upgradeGrid{
+    grid-template-columns:1fr;
+  }
+
+  .wheelWrap{
+    order:-1;
+  }
+
+  .inventoryGrid{
+    grid-template-columns:1fr;
+  }
+
+  .grid{
+    grid-template-columns:repeat(4,1fr);
+  }
+}
+
+@media(max-width:650px){
+
+  .main{
+    padding:25px 15px;
+  }
+
+  .topbar{
+    padding:0 12px;
+  }
+
+  .balance{
+    display:none;
+  }
+
+  .grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .shopGrid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .wheel{
+    width:250px;
+    height:250px;
+  }
+
+  .pick{
+    height:270px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+
+  <div class="logo">
+    <span class="logoMark">SPINNER</span>.pro
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="balance">
+    Balance:
+    <b id="balance">25.00</b>
+  </div>
+
+  <button class="addBalance" onclick="openBalance()">
+    + Add Balance
+  </button>
+
+  <div class="avatar"></div>
+
+</header>
+
+<div class="layout">
+
+<main class="main">
+
+  <div class="brand">
+    <span>⌃</span> COSMETIC SPINNER
+  </div>
+
+  <section class="upgradeGrid">
+
+    <!-- FROM -->
+
+    <div class="pick">
+
+      <h3>Choose cosmetic to use</h3>
+
+      <small>Select a fictional item</small>
+
+      <div class="placeholder" id="fromPlaceholder">
+        ⌄
+      </div>
+
+      <div class="itemPreview" id="fromPreview">
+
+        <div class="weapon" id="fromEmoji">🔫</div>
+
+        <b id="fromName">—</b>
+
+        <div class="previewPrice" id="fromPrice">
+          ◉ 0.00
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- SPINNER -->
+
+    <div class="wheelWrap">
+
+      <div class="wheel" id="wheel">
+
+        <div class="pointerOrbit" id="pointerOrbit">
+          <div class="pointer"></div>
+        </div>
+
+        <div class="center">
+
+          <strong id="chance">
+            50.00%
+          </strong>
+
+          <span>
+            demo probability
+          </span>
+
+        </div>
+
+      </div>
+
+      <div class="chanceLabel">
+
+        Success chance:
+        <b id="chance2">50.00%</b>
+
+      </div>
+
+      <div class="controls">
+
+        <button
+          class="speedButton"
+          id="speedButton"
+          onclick="toggleSpeed()">
+
+          ⚡ Speed: SLOW
+
+        </button>
+
+        <button
+          class="spinBtn"
+          id="upgradeBtn"
+          onclick="spin()"
+          disabled>
+
+          ⟳ Spin
+
+        </button>
+
+        <div class="ratioBox">
+
+          Target ratio:
+          <b id="ratioText">
+            Select two cosmetics
+          </b>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- TARGET -->
+
+    <div class="pick">
+
+      <h3>Choose cosmetic target</h3>
+
+      <small>Select a fictional item</small>
+
+      <div class="placeholder" id="toPlaceholder">
+        ⌃
+      </div>
+
+      <div class="itemPreview" id="toPreview">
+
+        <div class="weapon" id="toEmoji">🔫</div>
+
+        <b id="toName">—</b>
+
+        <div class="previewPrice" id="toPrice">
+          ◉ 0.00
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- INVENTORY -->
+
+  <section class="inventoryGrid">
+
+    <div class="panel">
+
+      <div class="panelHead">
+
+        <b>🎒 My Skins</b>
+
+        <span>Demo collection</span>
+
+        <button
+          class="shopBtn"
+          onclick="openShop()">
+
+          Shop
+
+        </button>
+
+      </div>
+
+      <div class="grid" id="myGrid"></div>
+
+    </div>
+
+    <div class="panel">
+
+      <div class="panelHead">
+
+        <b>⌃ Choose Skin</b>
+
+        <input
+          class="search"
+          id="search"
+          placeholder="Search"
+          oninput="renderTarget()">
+
+      </div>
+
+      <div class="grid" id="targetGrid"></div>
+
+    </div>
+
+  </section>
+
+  <div class="notice">
+
+    Standalone fictional UI demo.
+    Items and balance have no monetary or real-world value.
+
+  </div>
+
+</main>
+
+</div>
+
+<div class="chat">
+  ?
+</div>
+
+<!-- RESULT -->
+
+<div class="result" id="result">
+
+  <div class="resultBox">
+
+    <h2 id="resultTitle">
+      Spin complete
+    </h2>
+
+    <p id="resultText"></p>
+
+    <div class="modalButtons">
+
+      <button onclick="closeResult()">
+        Continue
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- SHOP -->
+
+<div class="shopModal" id="shopModal">
+
+  <div class="shopBox">
+
+    <h2>🛒 Cosmetic Shop</h2>
+
+    <p style="color:#777;font-size:12px;">
+      Purchase fictional cosmetics using demo balance.
+    </p>
+
+    <div class="shopGrid" id="shopGrid"></div>
+
+    <button
+      class="closeBtn"
+      onclick="closeShop()">
+
+      Close
+
+    </button>
+
+  </div>
+
+</div>
+
+<!-- ADD BALANCE -->
+
+<div class="balanceModal" id="balanceModal">
+
+  <div class="balanceBox">
+
+    <h2>+ Add Balance</h2>
+
+    <p style="color:#777;font-size:12px;">
+      This only adds fictional demo credits.
+    </p>
+
+    <input
+      class="balanceInput"
+      id="balanceInput"
+      type="number"
+      min="1"
+      value="10">
+
+    <div class="modalButtons">
+
+      <button onclick="addBalance()">
+        Add Credits
+      </button>
+
+    </div>
+
+    <button
+      class="closeBtn"
+      onclick="closeBalance()">
+
+      Close
+
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+
+/* =========================================
+   AUDIO
+========================================= */
+
+let audioCtx = null;
+
+function audio(){
+
+  if(!audioCtx){
+
+    audioCtx =
+      new (window.AudioContext ||
+      window.webkitAudioContext)();
+
+  }
+
+}
+
+function beep(
+  frequency,
+  duration,
+  type="sine",
+  volume=.04
+){
+
+  audio();
+
+  const oscillator =
+    audioCtx.createOscillator();
+
+  const gain =
+    audioCtx.createGain();
+
+  oscillator.type = type;
+  oscillator.frequency.value = frequency;
+
+  gain.gain.value = volume;
+
+  oscillator.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  oscillator.start();
+
+  gain.gain.exponentialRampToValueAtTime(
+    .001,
+    audioCtx.currentTime + duration
+  );
+
+  oscillator.stop(
+    audioCtx.currentTime + duration
+  );
+}
+
+function selectSound(){
+
+  beep(550,.06,"square",.025);
+
+}
+
+function spinSound(){
+
+  beep(180,.08,"sawtooth",.025);
+
+}
+
+function winSound(){
+
+  beep(523,.12,"sine",.04);
+
+  setTimeout(
+    () => beep(659,.14,"sine",.04),
+    100
+  );
+
+  setTimeout(
+    () => beep(784,.2,"sine",.04),
+    210
+  );
+
+}
+
+function loseSound(){
+
+  beep(230,.15,"sawtooth",.035);
+
+  setTimeout(
+    () => beep(160,.25,"sawtooth",.035),
+    130
+  );
+
+}
+
+
+/* =========================================
+   ITEMS
+========================================= */
+
+let myItems = [
+
+  {
+    name:"Crimson Knife",
+    price:0.42,
+    c1:"#a52b37",
+    c2:"#352027",
+    emoji:"🔪"
+  },
+
+  {
+    name:"Neon Pistol",
+    price:0.55,
+    c1:"#1c7d9e",
+    c2:"#7928a8",
+    emoji:"🔫"
+  },
+
+  {
+    name:"Blue Dagger",
+    price:0.73,
+    c1:"#1b65a2",
+    c2:"#9cd5ff",
+    emoji:"🗡️"
+  },
+
+  {
+    name:"Solar Rifle",
+    price:0.91,
+    c1:"#e1a300",
+    c2:"#713d12",
+    emoji:"🔫"
+  },
+
+  {
+    name:"Violet Blade",
+    price:1.18,
+    c1:"#5d238f",
+    c2:"#bd6cff",
+    emoji:"🗡️"
+  },
+
+  {
+    name:"Shadow SMG",
+    price:1.42,
+    c1:"#272a30",
+    c2:"#7b8190",
+    emoji:"🔫"
+  },
+
+  {
+    name:"Frost Knife",
+    price:1.87,
+    c1:"#7ac9e9",
+    c2:"#dcefff",
+    emoji:"🔪"
+  }
+
+];
+
+
+/* =========================================
+   TARGETS
+========================================= */
+
+const targets = [
+
+  {
+    name:"Hedge Maze",
+    price:2.75,
+    c1:"#31ad55",
+    c2:"#d8ff67",
+    emoji:"🧤"
+  },
+
+  {
+    name:"Pandora's Box",
+    price:2.63,
+    c1:"#5630a1",
+    c2:"#d0a5ff",
+    emoji:"🧤"
+  },
+
+  {
+    name:"Vox Eminor",
+    price:2.09,
+    c1:"#ff8d2b",
+    c2:"#5b248e",
+    emoji:"🎨"
+  },
+
+  {
+    name:"Wild Lotus",
+    price:1.61,
+    c1:"#0e673c",
+    c2:"#e8bd48",
+    emoji:"🔫"
+  },
+
+  {
+    name:"Howl",
+    price:1.58,
+    c1:"#8b1e1e",
+    c2:"#ef5e35",
+    emoji:"🔫"
+  },
+
+  {
+    name:"Dragon Lore",
+    price:1.29,
+    c1:"#2e75a3",
+    c2:"#f0c64d",
+    emoji:"🔫"
+  },
+
+  {
+    name:"Natus Vincere",
+    price:1.24,
+    c1:"#f4c400",
+    c2:"#4738a2",
+    emoji:"🏆"
+  },
+
+  {
+    name:"Gungnir",
+    price:1.20,
+    c1:"#a93d39",
+    c2:"#20252b",
+    emoji:"🔫"
+  },
+
+  {
+    name:"Crimson Kimon",
+    price:.91,
+    c1:"#7f2631",
+    c2:"#f1d5a2",
+    emoji:"🧤"
+  },
+
+  {
+    name:"Doppler Black",
+    price:.90,
+    c1:"#0e1116",
+    c2:"#9ca8c0",
+    emoji:"🔪"
+  },
+
+  {
+    name:"HellRaisers",
+    price:.89,
+    c1:"#c93a2c",
+    c2:"#1d1d23",
+    emoji:"🏆"
+  },
+
+  {
+    name:"Wildfire",
+    price:.84,
+    c1:"#9b3d22",
+    c2:"#e7a82f",
+    emoji:"🔫"
+  },
+
+  {
+    name:"Blue Steel",
+    price:.69,
+    c1:"#244d72",
+    c2:"#a7d7ff",
+    emoji:"🔫"
+  },
+
+  {
+    name:"Golden Fang",
+    price:.63,
+    c1:"#8d5d17",
+    c2:"#f4d66e",
+    emoji:"🔪"
+  },
+
+  {
+    name:"Night Hawk",
+    price:.58,
+    c1:"#1c2236",
+    c2:"#5f6c9a",
+    emoji:"🔫"
+  }
+
+];
+
+
+/* =========================================
+   SHOP ITEMS
+========================================= */
+
+const shopItems = [
+
+  {
+    name:"Ruby Fang",
+    price:3.50,
+    c1:"#9e1e38",
+    c2:"#f65b62",
+    emoji:"🔪"
+  },
+
+  {
+    name:"Cyber Rifle",
+    price:4.25,
+    c1:"#00a6c7",
+    c2:"#773cff",
+    emoji:"🔫"
+  },
+
+  {
+    name:"Golden Blade",
+    price:5.80,
+    c1:"#8e6814",
+    c2:"#ffe66b",
+    emoji:"🗡️"
+  },
+
+  {
+    name:"Void Hunter",
+    price:7.25,
+    c1:"#171724",
+    c2:"#7134c4",
+    emoji:"🔫"
+  },
+
+  {
+    name:"Inferno",
+    price:8.90,
+    c1:"#8c1d12",
+    c2:"#ffbf35",
+    emoji:"🔫"
+  },
+
+  {
+    name:"Ice Fang",
+    price:10.50,
+    c1:"#70c9ff",
+    c2:"#e8ffff",
+    emoji:"🔪"
+  },
+
+  {
+    name:"Galaxy Knife",
+    price:12.75,
+    c1:"#34268c",
+    c2:"#ed4bc8",
+    emoji:"🔪"
+  },
+
+  {
+    name:"Emerald Beast",
+    price:15.00,
+    c1:"#0b633c",
+    c2:"#8dff79",
+    emoji:"🗡️"
+  }
+
+];
+
+
+/* =========================================
+   STATE
+========================================= */
+
+let from = null;
+let to = null;
+
+let chance = 0;
+
+let spinning = false;
+
+let fastMode = false;
+
+let balance = 25;
+
+
+/* =========================================
+   CARD
+========================================= */
+
+function card(item,side){
+
+  const d =
+    document.createElement("div");
+
+  d.className = "card";
+
+  d.innerHTML = `
+
+    <div
+      class="skinArt"
+      style="
+        --c1:${item.c1};
+        --c2:${item.c2};
+      ">
+
+      ${item.emoji}
+
+    </div>
+
+    <div class="price">
+      ◉ ${item.price.toFixed(2)}
+    </div>
+
+    <div class="name">
+      ${item.name}
+    </div>
+
+  `;
+
+  d.onclick = () => {
+
+    selectItem(item,side,d);
+
+  };
+
+  return d;
+}
+
+
+/* =========================================
+   RENDER
+========================================= */
+
+function renderMy(){
+
+  const g =
+    document.getElementById("myGrid");
+
+  g.innerHTML = "";
+
+  myItems.forEach(item => {
+
+    g.appendChild(
+      card(item,"from")
+    );
+
+  });
+
+}
+
+
+function renderTarget(){
+
+  const g =
+    document.getElementById("targetGrid");
+
+  g.innerHTML = "";
+
+  const q =
+    document
+      .getElementById("search")
+      .value
+      .toLowerCase();
+
+  targets
+    .filter(item =>
+      item.name
+        .toLowerCase()
+        .includes(q)
+    )
+    .forEach(item => {
+
+      g.appendChild(
+        card(item,"to")
+      );
+
+    });
+
+}
+
+
+/* =========================================
+   SELECT
+========================================= */
+
+function selectItem(item,side,el){
+
+  if(spinning){
+    return;
+  }
+
+  selectSound();
+
+  if(side === "from"){
+
+    from = item;
+
+    document
+      .getElementById("fromPlaceholder")
+      .style.display = "none";
+
+    document
+      .getElementById("fromPreview")
+      .style.display = "block";
+
+    document
+      .getElementById("fromName")
+      .textContent = item.name;
+
+    document
+      .getElementById("fromEmoji")
+      .textContent = item.emoji;
+
+    document
+      .getElementById("fromPrice")
+      .textContent =
+        "◉ " + item.price.toFixed(2);
+
+    document
+      .querySelectorAll("#myGrid .card")
+      .forEach(c =>
+        c.classList.remove("selected")
+      );
+
+  }
+
+  else{
+
+    to = item;
+
+    document
+      .getElementById("toPlaceholder")
+      .style.display = "none";
+
+    document
+      .getElementById("toPreview")
+      .style.display = "block";
+
+    document
+      .getElementById("toName")
+      .textContent = item.name;
+
+    document
+      .getElementById("toEmoji")
+      .textContent = item.emoji;
+
+    document
+      .getElementById("toPrice")
+      .textContent =
+        "◉ " + item.price.toFixed(2);
+
+    document
+      .querySelectorAll("#targetGrid .card")
+      .forEach(c =>
+        c.classList.remove("selected")
+      );
+
+  }
+
+  el.classList.add("selected");
+
+  updateRatio();
+
+  update();
+
+}
+
+
+/* =========================================
+   REALISTIC DEMO PROBABILITY
+========================================= */
+
+function calculateChance(){
+
+  if(!from || !to){
+    chance = 0;
+    return;
+  }
+
+  /*
+    Probability is based on the ratio:
+
+    chance = FROM / TARGET * 100
+
+    Examples:
+
+    10 -> 20 = 50%
+    20 -> 30 = 66.67%
+    20 -> 40 = 50%
+    30 -> 40 = 75%
+
+    A target that isn't more expensive
+    cannot be selected.
+  */
+
+  if(to.price <= from.price){
+
+    chance = 0;
+
+  }
+
+  else{
+
+    chance =
+      (from.price / to.price) * 100;
+
+    chance =
+      Math.min(99.99,chance);
+
+  }
+
+}
+
+
+/* =========================================
+   RATIO DISPLAY
+========================================= */
+
+function updateRatio(){
+
+  const ratio =
+    document.getElementById("ratioText");
+
+  calculateChance();
+
+  if(!from || !to){
+
+    ratio.innerHTML =
+      "Select two cosmetics";
+
+    updateChanceDisplay();
+
+    return;
+
+  }
+
+  const multiplier =
+    to.price / from.price;
+
+  if(to.price <= from.price){
+
+    ratio.innerHTML = `
+      <span class="unavailable">
+        Target must be more valuable
+      </span>
+    `;
+
+    updateChanceDisplay();
+
+    return;
+
+  }
+
+  ratio.innerHTML = `
+    ${from.price.toFixed(2)}
+    → 
+    ${to.price.toFixed(2)}
+
+    &nbsp; | &nbsp;
+
+    <span class="ratio">
+      x${multiplier.toFixed(2)}
+    </span>
+  `;
+
+  updateChanceDisplay();
+
+}
+
+
+/* =========================================
+   CHANCE DISPLAY
+========================================= */
+
+function updateChanceDisplay(){
+
+  document
+    .getElementById("chance")
+    .textContent =
+      chance > 0
+        ? chance.toFixed(2) + "%"
+        : "—";
+
+  document
+    .getElementById("chance2")
+    .textContent =
+      chance > 0
+        ? chance.toFixed(2) + "%"
+        : "—";
+
+  document.documentElement
+    .style
+    .setProperty(
+      "--chance",
+      chance
+    );
+
+}
+
+
+/* =========================================
+   UPDATE BUTTON
+========================================= */
+
+function update(){
+
+  calculateChance();
+
+  updateChanceDisplay();
+
+  const btn =
+    document.getElementById("upgradeBtn");
+
+  btn.disabled =
+    !from ||
+    !to ||
+    chance <= 0 ||
+    spinning;
+
+}
+
+
+/* =========================================
+   SPEED
+========================================= */
+
+function toggleSpeed(){
+
+  if(spinning){
+    return;
+  }
+
+  selectSound();
+
+  fastMode =
+    !fastMode;
+
+  const button =
+    document.getElementById("speedButton");
+
+  if(fastMode){
+
+    button.classList.add("fast");
+
+    button.textContent =
+      "⚡ Speed: FAST";
+
+  }
+
+  else{
+
+    button.classList.remove("fast");
+
+    button.textContent =
+      "⚡ Speed: SLOW";
+
+  }
+
+}
+
+
+/* =========================================
+   SPIN
+========================================= */
+
+function spin(){
+
+  if(
+    !from ||
+    !to ||
+    spinning
+  ){
+    return;
+  }
+
+  calculateChance();
+
+  if(chance <= 0){
+    return;
+  }
+
+  audio();
+
+  const arrow =
+    document.getElementById("pointerOrbit");
+
+  const button =
+    document.getElementById("upgradeBtn");
+
+  spinning = true;
+
+  button.disabled = true;
+
+  spinSound();
+
+  const currentRotation =
+    parseFloat(
+      arrow.dataset.rotation || "0"
+    );
+
+  /*
+    First decide the result.
+
+    The selected result determines the final
+    angle, so the visual pointer and result
+    always agree.
+  */
+
+  const success =
+    Math.random() * 100 < chance;
+
+  /*
+    Green section is exactly the calculated
+    probability.
+
+    Pick a random point inside the green
+    section for success and red section for
+    failure.
+  */
+
+  let finalAngle;
+
+  const greenAngle =
+    chance * 3.6;
+
+  if(success){
+
+    finalAngle =
+      Math.random() * greenAngle;
+
+  }
+
+  else{
+
+    finalAngle =
+      greenAngle +
+      Math.random() * (360 - greenAngle);
+
+  }
+
+  const currentNormalized =
+    (
+      currentRotation % 360 + 360
+    ) % 360;
+
+  let delta =
+    finalAngle -
+    currentNormalized;
+
+  if(delta < 0){
+    delta += 360;
+  }
+
+  const fullTurns =
+    fastMode ? 3 : 7;
+
+  const targetRotation =
+    currentRotation +
+    fullTurns * 360 +
+    delta;
+
+  arrow.dataset.rotation =
+    targetRotation;
+
+  arrow.style.transition =
+    fastMode
+      ? "transform 1.25s cubic-bezier(.12,.72,.12,1)"
+      : "transform 3.6s cubic-bezier(.12,.72,.12,1)";
+
+  arrow.style.transform =
+    `rotate(${targetRotation}deg)`;
+
+  const waitTime =
+    fastMode
+      ? 1400
+      : 3800;
+
+  setTimeout(() => {
+
+    const stoppedAngle =
+      (
+        targetRotation % 360 + 360
+      ) % 360;
+
+    /*
+      Determine the displayed result directly
+      from the final pointer position.
+    */
+
+    const visualSuccess =
+      stoppedAngle >= 0 &&
+      stoppedAngle < greenAngle;
+
+    finishSpin(
+      visualSuccess,
+      stoppedAngle
+    );
+
+  },waitTime);
+
+}
+
+
+/* =========================================
+   FINISH
+========================================= */
+
+function finishSpin(success,angle){
+
+  if(success){
+
+    const oldFrom =
+      from;
+
+    const index =
+      myItems.indexOf(oldFrom);
+
+    if(index !== -1){
+
+      myItems.splice(index,1);
+
+    }
+
+    const won =
+      {...to};
+
+    myItems.push(won);
+
+    renderMy();
+
+    from = won;
+
+    showFrom(won);
+
+    winSound();
+
+    showResult(
+      true,
+      angle,
+      won
+    );
+
+  }
+
+  else{
+
+    const lost =
+      from;
+
+    const index =
+      myItems.indexOf(lost);
+
+    if(index !== -1){
+
+      myItems.splice(index,1);
+
+    }
+
+    renderMy();
+
+    from = null;
+
+    clearFrom();
+
+    loseSound();
+
+    showResult(
+      false,
+      angle,
+      lost
+    );
+
+  }
+
+  spinning = false;
+
+  update();
+
+}
+
+
+/* =========================================
+   SHOW FROM
+========================================= */
+
+function showFrom(item){
+
+  document
+    .getElementById("fromPlaceholder")
+    .style.display = "none";
+
+  document
+    .getElementById("fromPreview")
+    .style.display = "block";
+
+  document
+    .getElementById("fromName")
+    .textContent = item.name;
+
+  document
+    .getElementById("fromEmoji")
+    .textContent = item.emoji;
+
+  document
+    .getElementById("fromPrice")
+    .textContent =
+      "◉ " + item.price.toFixed(2);
+
+}
+
+
+function clearFrom(){
+
+  document
+    .getElementById("fromPlaceholder")
+    .style.display = "block";
+
+  document
+    .getElementById("fromPreview")
+    .style.display = "none";
+
+}
+
+
+/* =========================================
+   RESULT
+========================================= */
+
+function showResult(
+  success,
+  angle,
+  item
+){
+
+  const result =
+    document.getElementById("result");
+
+  const title =
+    document.getElementById("resultTitle");
+
+  const text =
+    document.getElementById("resultText");
+
+  result.style.display = "flex";
+
+  if(success){
+
+    title.textContent =
+      "Upgrade successful!";
+
+    text.textContent =
+      `You received ${item.name} (${item.price.toFixed(2)}).`;
+
+  }
+
+  else{
+
+    title.textContent =
+      "Upgrade failed";
+
+    text.textContent =
+      `The pointer stopped at ${angle.toFixed(1)}°. Your selected cosmetic was lost in this fictional demo.`;
+
+  }
+
+}
+
+
+function closeResult(){
+
+  document
+    .getElementById("result")
+    .style.display = "none";
+
+  update();
+
+}
+
+
+/* =========================================
+   BALANCE
+========================================= */
+
+function updateBalance(){
+
+  document
+    .getElementById("balance")
+    .textContent =
+      balance.toFixed(2);
+
+}
+
+
+function openBalance(){
+
+  selectSound();
+
+  document
+    .getElementById("balanceModal")
+    .style.display = "flex";
+
+}
+
+
+function closeBalance(){
+
+  document
+    .getElementById("balanceModal")
+    .style.display = "none";
+
+}
+
+
+function addBalance(){
+
+  const input =
+    document.getElementById("balanceInput");
+
+  let amount =
+    parseFloat(input.value);
+
+  if(isNaN(amount) || amount <= 0){
+    return;
+  }
+
+  balance += amount;
+
+  updateBalance();
+
+  closeBalance();
+
+  beep(700,.1,"sine",.04);
+
+}
+
+
+/* =========================================
+   SHOP
+========================================= */
+
+function openShop(){
+
+  selectSound();
+
+  renderShop();
+
+  document
+    .getElementById("shopModal")
+    .style.display = "flex";
+
+}
+
+
+function closeShop(){
+
+  document
+    .getElementById("shopModal")
+    .style.display = "none";
+
+}
+
+
+function renderShop(){
+
+  const grid =
+    document.getElementById("shopGrid");
+
+  grid.innerHTML = "";
+
+  shopItems.forEach(item => {
+
+    const d =
+      document.createElement("div");
+
+    d.className = "shopCard";
+
+    d.innerHTML = `
+
+      <div
+        class="shopArt"
+        style="
+          --c1:${item.c1};
+          --c2:${item.c2};
+        ">
+
+        ${item.emoji}
+
+      </div>
+
+      <div class="shopName">
+        ${item.name}
+      </div>
+
+      <div class="shopPrice">
+        ◉ ${item.price.toFixed(2)}
+      </div>
+
+      <button class="buyBtn">
+        BUY
+      </button>
+
+    `;
+
+    d.querySelector(".buyBtn").onclick =
+      () => buyItem(item);
+
+    grid.appendChild(d);
+
+  });
+
+}
+
+
+function buyItem(item){
+
+  if(balance < item.price){
+
+    beep(150,.2,"sawtooth",.035);
+
+    alert("Not enough demo balance.");
+
+    return;
+
+  }
+
+  balance -= item.price;
+
+  myItems.push({...item});
+
+  updateBalance();
+
+  renderMy();
+
+  beep(700,.08,"sine",.035);
+
+  setTimeout(
+    () => beep(900,.1,"sine",.035),
+    80
+  );
+
+}
+
+
+/* =========================================
+   START
+========================================= */
+
+document.documentElement
+  .style
+  .setProperty(
+    "--chance",
+    chance
+  );
+
+renderMy();
+
+renderTarget();
+
+updateBalance();
+
+update();
+
+</script>
+
+</body>
+</html>
